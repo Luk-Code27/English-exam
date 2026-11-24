@@ -26,12 +26,16 @@ jobs:
         continue-on-error: true
         run: ./gradlew build --console=plain > /tmp/build.log 2>&1
       - name: Inspect Minecraft classes (for porting)
+        continue-on-error: true
         run: |
+          set +e
           JAR=$(./gradlew -q inspectMinecraft 2>/dev/null | grep MCJAR | sed 's/MCJAR: //' | tr '\n' ':')
           echo "classpath: $JAR" > /tmp/inspect.log
           for c in $(cat inspect-classes.txt); do echo "=== $c" >> /tmp/inspect.log; javap -cp "$JAR" -public "$c" >> /tmp/inspect.log 2>&1; done
       - name: Publish result to build-output branch
+        if: always()
         run: |
+          touch /tmp/build.log /tmp/inspect.log
           mkdir -p /tmp/out
           cp /tmp/build.log /tmp/inspect.log /tmp/out/
           cp build/libs/exam_slides-*.jar /tmp/out/ 2>/dev/null || true
