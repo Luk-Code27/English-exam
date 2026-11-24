@@ -26,7 +26,7 @@ java {
 // Prints signatures of the Minecraft classes this mod uses (helps when porting to a new version)
 tasks.register('inspectMinecraft') {
 	doLast {
-		def jars = configurations.compileClasspath.files.findAll { it.name.contains('minecraft') }
+		def jars = configurations.compileClasspath.files
 		jars.each { println "MCJAR: ${it}" }
 	}
 }
