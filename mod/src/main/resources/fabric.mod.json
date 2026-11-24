@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "exam_slides",
+  "version": "${version}",
+  "name": "Exam Slides",
+  "description": "Folien und Bilder in Minecraft anzeigen: Folien-Manager, Bilder platzieren, Befehle auf Tasten.",
+  "authors": ["Luk"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["de.luk.examslides.ExamSlidesClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

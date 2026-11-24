@@ -1,0 +1,10 @@
+net.minecraft.client.KeyMapping
+net.minecraft.client.KeyMapping$Category
+com.mojang.blaze3d.platform.InputConstants
+net.minecraft.client.gui.screens.Screen
+net.minecraft.client.gui.components.Button
+net.minecraft.client.gui.components.EditBox
+net.minecraft.client.gui.components.StringWidget
+net.minecraft.client.Options
+net.minecraft.server.packs.repository.PackRepository
+net.minecraft.client.multiplayer.ClientPacketListener
