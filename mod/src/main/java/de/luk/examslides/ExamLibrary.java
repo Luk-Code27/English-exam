@@ -32,6 +32,27 @@ public final class ExamLibrary {
 	public ExamConfig config() { return config; }
 	public Path folder() { return root; }
 
+	public Path importFolder() { return root.resolve("import"); }
+
+	/** Imports all images from <instance>/exam_slides/import (sorted by name) and deletes them there. */
+	public int importFromFolder(boolean asSlides) {
+		Path dir = importFolder();
+		try {
+			Files.createDirectories(dir);
+			List<Path> files;
+			try (var s = Files.list(dir)) { files = s.filter(Files::isRegularFile).sorted().toList(); }
+			int n = addFiles(files, asSlides);
+			for (Path f : files) {
+				String l = f.getFileName().toString().toLowerCase(Locale.ROOT);
+				if (l.endsWith(".png") || l.endsWith(".jpg") || l.endsWith(".jpeg")) Files.deleteIfExists(f);
+			}
+			return n;
+		} catch (IOException e) {
+			ExamSlidesClient.LOG.error("Import failed", e);
+			return 0;
+		}
+	}
+
 	public void save() { config.save(root.resolve("config.json")); }
 
 	/** Copies image files into the library and adds them as slides or pictures. Returns how many were added. */

@@ -101,12 +101,14 @@ public class ManagerScreen extends Screen {
 			addRenderableWidget(Button.builder(Component.literal(">"), btn -> { page = Math.min(pages - 1, page + 1); rebuildWidgets(); })
 					.bounds(cx - 62, py, 20, 20).build());
 		}
-		addRenderableWidget(new StringWidget(cx - 150, this.height - 66, 300, 12,
+		addRenderableWidget(new StringWidget(cx - 150, this.height - 90, 300, 12,
 				Component.literal("Tipp: PNG/JPG-Dateien einfach in dieses Fenster ziehen."), this.font));
 		addRenderableWidget(Button.builder(Component.literal("Dateien wählen..."), btn -> openFileDialog())
-				.bounds(cx - 150, this.height - 52, 146, 20).build());
-		addRenderableWidget(Button.builder(Component.literal("Übernehmen"), btn -> lib().apply())
-				.bounds(cx + 4, this.height - 52, 146, 20).build());
+				.bounds(cx - 150, this.height - 76, 146, 20).build());
+		addRenderableWidget(Button.builder(Component.literal("Aus Import-Ordner"), btn -> importFolder())
+				.bounds(cx + 4, this.height - 76, 146, 20).build());
+		addRenderableWidget(Button.builder(Component.literal("Übernehmen (Bilder ins Spiel laden)"), btn -> lib().apply())
+				.bounds(cx - 150, this.height - 52, 300, 20).build());
 		if (tab == 0) {
 			addRenderableWidget(Button.builder(Component.literal("Leinwand hier"),
 					btn -> { ExamSlidesClient.runCommand("function exam:screen/place"); onClose(); })
@@ -167,8 +169,12 @@ public class ManagerScreen extends Screen {
 						break;
 					}
 				}
-				if (m == null) throw new IllegalStateException("no tinyfd");
-				String res = (String) m.invoke(null, "Bilder auswählen", "", null, "Bilder (png, jpg)", true);
+				String res;
+				if (m != null) {
+					res = (String) m.invoke(null, "Bilder auswählen", "", null, "Bilder (png, jpg)", true);
+				} else {
+					res = awtDialog();
+				}
 				if (res == null || res.isBlank()) return;
 				List<Path> files = new ArrayList<>();
 				for (String s : res.split("\\|")) files.add(Path.of(s));
@@ -177,6 +183,23 @@ public class ManagerScreen extends Screen {
 					ExamSlidesClient.message(n + " Datei(en) hinzugefügt. Zum Anzeigen \"Übernehmen\" drücken.");
 					if (Minecraft.getInstance().gui.screen() instanceof ManagerScreen s) s.rebuildWidgets();
 				});
+			} catch (ClassNotFoundException e) {
+				try {
+					String res = awtDialog();
+					if (res != null) {
+						List<Path> files = new ArrayList<>();
+						for (String f : res.split("\\|")) files.add(Path.of(f));
+						Minecraft.getInstance().execute(() -> {
+							int n = lib().addFiles(files, asSlides);
+							ExamSlidesClient.message(n + " Datei(en) hinzugefügt. Zum Anzeigen \"Übernehmen\" drücken.");
+							if (Minecraft.getInstance().gui.screen() instanceof ManagerScreen s) s.rebuildWidgets();
+						});
+					}
+				} catch (Throwable e2) {
+					ExamSlidesClient.LOG.warn("File dialog not available", e2);
+					Minecraft.getInstance().execute(() -> ExamSlidesClient.message(
+							"Dateiauswahl geht hier nicht. Bitte Dateien ins Fenster ziehen oder den Import-Ordner nutzen."));
+				}
 			} catch (Throwable e) {
 				ExamSlidesClient.LOG.warn("File dialog not available", e);
 				Minecraft.getInstance().execute(() -> ExamSlidesClient.message(
@@ -185,6 +208,28 @@ public class ManagerScreen extends Screen {
 		}, "exam-slides-file-dialog");
 		t.setDaemon(true);
 		t.start();
+	}
+
+	/** Windows file dialog via AWT (works when the game is not headless). Returns paths joined with | or null. */
+	private static String awtDialog() {
+		java.awt.FileDialog d = new java.awt.FileDialog((java.awt.Frame) null, "Bilder auswählen", java.awt.FileDialog.LOAD);
+		d.setMultipleMode(true);
+		d.setFile("*.png;*.jpg;*.jpeg");
+		d.setVisible(true);
+		java.io.File[] files = d.getFiles();
+		d.dispose();
+		if (files == null || files.length == 0) return null;
+		StringBuilder sb = new StringBuilder();
+		for (java.io.File f : files) { if (sb.length() > 0) sb.append('|'); sb.append(f.getAbsolutePath()); }
+		return sb.toString();
+	}
+
+	private void importFolder() {
+		int n = lib().importFromFolder(tab == 0);
+		ExamSlidesClient.message(n == 0
+				? "Keine Bilder im Ordner " + lib().importFolder() + " gefunden."
+				: n + " Datei(en) aus dem Import-Ordner hinzugefügt. Zum Anzeigen \"Übernehmen\" drücken.");
+		rebuildWidgets();
 	}
 
 	@Override
