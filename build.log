@@ -1,0 +1,22 @@
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+> Configure project :
+Fabric Loom: 1.17.21
+
+> Task :compileJava
+> Task :processResources
+> Task :classes
+> Task :processIncludeJars
+> Task :compileTestJava NO-SOURCE
+> Task :processTestResources NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :jar
+> Task :assemble
+> Task :test NO-SOURCE
+> Task :validateAccessWidener NO-SOURCE
+> Task :check UP-TO-DATE
+> Task :build
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/build-1795539801594.json
+
+BUILD SUCCESSFUL in 12s
+4 actionable tasks: 4 executed
