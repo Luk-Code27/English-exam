@@ -49,3 +49,21 @@ F1 blendet die Leiste aus. Für den schwachen Laptop: Sichtweite 6–8 Chunks.
 
 `python3 tools/make_slides.py` baut die Bilder neu. Liegen PNGs in `slides/`, werden die benutzt.
 Wenn sich die Anzahl der Folien ändert, auch `#max` in `datapack/.../load.mcfunction` anpassen.
+
+## Mod „Exam Slides“ (Fabric 26.3)
+
+Quellcode in `mod/`. Gebaut wird automatisch über GitHub Actions; die fertige Jar liegt im Branch `build-output`.
+
+| Taste | Funktion |
+| --- | --- |
+| Pfeil rechts / links | Nächste / vorherige Folie |
+| F7 | Folien-Manager öffnen |
+| Befehlstaste 1–5 | Eigene Befehle (Befehl im Folien-Manager unter „Befehlstasten“, Taste in Optionen → Steuerung → Exam Slides) |
+
+**Folien-Manager (F7):**
+- Reiter „Folien“ / „Bilder“: PNG/JPG ins Fenster ziehen, „Dateien wählen…“ oder „Aus Import-Ordner“
+  (`<Instanz>/exam_slides/import/`). Reihenfolge mit ^ / v, löschen mit X.
+- „Übernehmen“ baut das Resourcepack `exam_slides_live` und lädt die Bilder ins Spiel.
+- Folien: „Zeigen“ springt zur Folie, „Leinwand hier“ stellt die Leinwand auf.
+- Bilder: „Platzieren“ hängt das Bild 3 Blöcke vor dir auf, „Bild entfernen“ entfernt das nächste Bild.
+  Größe: `/function exam:image/size {s:4}`.
