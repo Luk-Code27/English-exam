@@ -8,3 +8,9 @@ net.minecraft.client.gui.components.StringWidget
 net.minecraft.client.Options
 net.minecraft.server.packs.repository.PackRepository
 net.minecraft.client.multiplayer.ClientPacketListener
+net.minecraft.client.gui.components.Button$OnPress
+net.minecraft.client.gui.components.Button$Builder
+net.minecraft.client.Minecraft
+net.minecraft.client.gui.components.ChatComponent
+net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
+net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper

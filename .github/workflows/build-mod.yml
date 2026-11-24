@@ -22,22 +22,27 @@ jobs:
           java-version: '25'
       - uses: gradle/actions/setup-gradle@v4
       - name: Build
-        run: ./gradlew build --stacktrace
+        id: build
+        continue-on-error: true
+        run: ./gradlew build --console=plain > /tmp/build.log 2>&1
       - name: Inspect Minecraft classes (for porting)
-        if: always()
         run: |
-          ./gradlew -q inspectMinecraft || true
-          JAR=$(./gradlew -q inspectMinecraft 2>/dev/null | grep MCJAR | head -1 | sed 's/MCJAR: //')
-          echo "jar: $JAR"
-          for c in $(cat inspect-classes.txt); do echo "=== $c"; javap -cp "$JAR" -public "$c" 2>&1 | head -80; done
-      - name: Publish jar to build-output branch
-        if: success()
+          JAR=$(./gradlew -q inspectMinecraft 2>/dev/null | grep MCJAR | sed 's/MCJAR: //' | tr '\n' ':')
+          echo "classpath: $JAR" > /tmp/inspect.log
+          for c in $(cat inspect-classes.txt); do echo "=== $c" >> /tmp/inspect.log; javap -cp "$JAR" -public "$c" >> /tmp/inspect.log 2>&1; done
+      - name: Publish result to build-output branch
         run: |
-          mkdir -p /tmp/out && cp build/libs/exam_slides-*.jar /tmp/out/
+          mkdir -p /tmp/out
+          cp /tmp/build.log /tmp/inspect.log /tmp/out/
+          cp build/libs/exam_slides-*.jar /tmp/out/ 2>/dev/null || true
           rm -f /tmp/out/*-sources.jar
+          echo "${{ steps.build.outcome }} ${GITHUB_SHA}" > /tmp/out/STATUS
           cd /tmp/out
           git init -q -b build-output
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
-          git add . && git commit -qm "Build ${GITHUB_SHA}"
+          git add . && git commit -qm "Build ${GITHUB_SHA}: ${{ steps.build.outcome }}"
           git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" build-output
+      - name: Fail if build failed
+        if: steps.build.outcome != 'success'
+        run: exit 1
