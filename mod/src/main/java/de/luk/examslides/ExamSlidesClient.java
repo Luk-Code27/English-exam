@@ -39,7 +39,7 @@ public class ExamSlidesClient implements ClientModInitializer {
 		if (mc.player == null) return;
 		while (next.consumeClick()) runCommand("function exam:next");
 		while (prev.consumeClick()) runCommand("function exam:prev");
-		while (manager.consumeClick()) mc.setScreen(new ManagerScreen(null));
+		while (manager.consumeClick()) mc.gui.setScreen(new ManagerScreen(null));
 		for (int i = 0; i < COMMAND_KEYS.length; i++) {
 			while (COMMAND_KEYS[i].consumeClick()) {
 				String cmd = ExamLibrary.get().config().commands.get(i);
@@ -62,6 +62,6 @@ public class ExamSlidesClient implements ClientModInitializer {
 
 	public static void message(String text) {
 		Minecraft mc = Minecraft.getInstance();
-		mc.gui.getChat().addMessage(Component.literal("[Exam Slides] " + text));
+		if (mc.player != null) mc.player.sendSystemMessage(Component.literal("[Exam Slides] " + text));
 	}
 }

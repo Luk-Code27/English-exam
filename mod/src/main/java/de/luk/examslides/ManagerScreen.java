@@ -175,7 +175,7 @@ public class ManagerScreen extends Screen {
 				Minecraft.getInstance().execute(() -> {
 					int n = lib().addFiles(files, asSlides);
 					ExamSlidesClient.message(n + " Datei(en) hinzugefügt. Zum Anzeigen \"Übernehmen\" drücken.");
-					if (Minecraft.getInstance().screen instanceof ManagerScreen s) s.rebuildWidgets();
+					if (Minecraft.getInstance().gui.screen() instanceof ManagerScreen s) s.rebuildWidgets();
 				});
 			} catch (Throwable e) {
 				ExamSlidesClient.LOG.warn("File dialog not available", e);
@@ -190,7 +190,7 @@ public class ManagerScreen extends Screen {
 	@Override
 	public void onClose() {
 		saveCommands();
-		this.minecraft.setScreen(parent);
+		Minecraft.getInstance().gui.setScreen(parent);
 	}
 
 	@Override
